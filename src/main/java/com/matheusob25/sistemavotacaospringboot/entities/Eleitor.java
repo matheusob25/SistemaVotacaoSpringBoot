@@ -3,29 +3,32 @@ package com.matheusob25.sistemavotacaospringboot.entities;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
+import jakarta.persistence.ManyToMany;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 @Entity
-public class Politico implements Serializable {
+public class Eleitor {
     @Id
     @GeneratedValue
     private Long id;
     private String nome;
-    private String descricao;
+    private String email;
+    private String senha;
 
-    private List<Eleitor> eleitores = new ArrayList<>();
 
-    public Politico() {
+    private List<Politico> votos = new ArrayList<>();
+
+    public Eleitor(){
 
     }
-    public Politico(Long id, String nome, String descricao) {
+    public Eleitor(Long id, String nome, String email, String senha) {
         this.id = id;
         this.nome = nome;
-        this.descricao = descricao;
+        this.email = email;
+        this.senha = senha;
     }
 
     public Long getId() {
@@ -44,20 +47,32 @@ public class Politico implements Serializable {
         this.nome = nome;
     }
 
-    public String getDescricao() {
-        return descricao;
+    public String getEmail() {
+        return email;
     }
 
-    public void setDescricao(String descricao) {
-        this.descricao = descricao;
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getSenha() {
+        return senha;
+    }
+
+    public void setSenha(String senha) {
+        this.senha = senha;
+    }
+
+    public List<Politico> getVotos() {
+        return votos;
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Politico politico = (Politico) o;
-        return Objects.equals(id, politico.id);
+        Eleitor eleitor = (Eleitor) o;
+        return Objects.equals(id, eleitor.id);
     }
 
     @Override
@@ -67,10 +82,12 @@ public class Politico implements Serializable {
 
     @Override
     public String toString() {
-        return "Politico{" +
+        return "Eleitor{" +
                 "id=" + id +
                 ", nome='" + nome + '\'' +
-                ", descricao='" + descricao + '\'' +
+                ", email='" + email + '\'' +
+                ", senha='" + senha + '\'' +
+                ", votos=" + votos +
                 '}';
     }
 }
