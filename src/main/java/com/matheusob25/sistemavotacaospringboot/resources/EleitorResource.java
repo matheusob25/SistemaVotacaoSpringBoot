@@ -3,12 +3,11 @@ package com.matheusob25.sistemavotacaospringboot.resources;
 import com.matheusob25.sistemavotacaospringboot.entities.Eleitor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import com.matheusob25.sistemavotacaospringboot.services.EleitorService;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.net.URI;
 import java.util.List;
 
 @RestController
@@ -28,4 +27,21 @@ public class EleitorResource {
         Eleitor eleitor = eleitorService.buscarEleitorPorId(id);
         return ResponseEntity.ok().body(eleitor);
     }
+    @PostMapping
+    public ResponseEntity<Eleitor> adicionarEleitor(@RequestBody Eleitor eleitor){
+        eleitor = eleitorService.inserirEleitor(eleitor);
+        URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(eleitor.getId()).toUri();
+        return ResponseEntity.created(uri).body(eleitor);
+    }
+    @PutMapping(value = "/{id}")
+    public ResponseEntity<Eleitor> atualizarEleitor(@PathVariable Long id, @RequestBody Eleitor eleitor){
+        eleitor = eleitorService.alterarEleitor(id, eleitor);
+        return ResponseEntity.ok().body(eleitor);
+    }
+    @DeleteMapping(value = "/{id}")
+    public ResponseEntity<Void> removerEleitor(@PathVariable Long id){
+        eleitorService.removerEleitorPorId(id);
+        return ResponseEntity.noContent().build();
+    }
+
 }
