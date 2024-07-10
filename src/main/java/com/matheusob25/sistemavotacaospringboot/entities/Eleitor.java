@@ -1,25 +1,22 @@
 package com.matheusob25.sistemavotacaospringboot.entities;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToMany;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.*;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
-@Entity
+@Entity(name = "tb_eleitor")
 public class Eleitor {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String nome;
     private String email;
     private String senha;
 
-
-    private List<Politico> votos = new ArrayList<>();
+    @JsonIgnore
+    @ManyToMany(mappedBy = "eleitores")
+    private Set<Politico> politicos = new HashSet<>();
 
     public Eleitor(){
 
@@ -63,8 +60,20 @@ public class Eleitor {
         this.senha = senha;
     }
 
-    public List<Politico> getVotos() {
-        return votos;
+    public Set<Politico> getPoliticos() {
+        return politicos;
+    }
+    public void votarPolitico(Politico politico) {
+        if(politico != null && politicos.size() == 0){
+            politicos.add(politico);
+            politico.adicionaEleitor(this);
+        } else if (politico != null && politicos.size() > 0) {
+            politicos.removeAll(getPoliticos());
+            politicos.add(politico);
+            politico.adicionaEleitor(this);
+        }else{
+            System.out.println("Politico não existe na base de dados");
+        }
     }
 
     @Override
@@ -86,8 +95,6 @@ public class Eleitor {
                 "id=" + id +
                 ", nome='" + nome + '\'' +
                 ", email='" + email + '\'' +
-                ", senha='" + senha + '\'' +
-                ", votos=" + votos +
-                '}';
+                ", senha='" + senha ;
     }
 }

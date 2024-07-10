@@ -1,23 +1,22 @@
 package com.matheusob25.sistemavotacaospringboot.entities;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @Entity
+@Table(name = "tb_politico")
 public class Politico implements Serializable {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String nome;
     private String descricao;
 
-    private List<Eleitor> eleitores = new ArrayList<>();
+    @ManyToMany
+    @JoinTable(name = "tb_politico_eleitor", joinColumns = @JoinColumn(name = "id_politico"), inverseJoinColumns = @JoinColumn(name = "id_eleitor"))
+    private Set<Eleitor> eleitores = new HashSet<>();
 
     public Politico() {
 
@@ -50,6 +49,16 @@ public class Politico implements Serializable {
 
     public void setDescricao(String descricao) {
         this.descricao = descricao;
+    }
+    public Set<Eleitor> getEleitores() {
+        return eleitores;
+    }
+    public void adicionaEleitor(Eleitor eleitor) {
+        if (eleitor != null && !eleitores.contains(eleitor)) {
+            eleitores.add(eleitor);
+        }else {
+            System.out.println("Erro ao adicionar eleitor, já existe ou valores nulos");
+        }
     }
 
     @Override
