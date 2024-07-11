@@ -1,6 +1,7 @@
 package com.matheusob25.sistemavotacaospringboot.services;
 
 import com.matheusob25.sistemavotacaospringboot.entities.Eleitor;
+import com.matheusob25.sistemavotacaospringboot.services.exceptions.DatabaseException;
 import com.matheusob25.sistemavotacaospringboot.services.exceptions.ResourceNotFoundException;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,14 +36,14 @@ public class EleitorService {
     public Eleitor alterarEleitor(Long id, Eleitor eleitorNovo){
      try {
          Eleitor eleitor = eleitorRepo.getReferenceById(id);
-         udpateData(eleitor, eleitorNovo);
+         alterarDados(eleitor, eleitorNovo);
          return eleitorRepo.save(eleitor);
      }catch (EntityNotFoundException e){
          throw new ResourceNotFoundException(id);
      }
 
     }
-    private void udpateData(Eleitor eleitorAntigo, Eleitor eleitorNovo){
+    private void alterarDados(Eleitor eleitorAntigo, Eleitor eleitorNovo){
         eleitorAntigo.setNome(eleitorNovo.getNome());
         eleitorAntigo.setEmail(eleitorNovo.getEmail());
         eleitorAntigo.setSenha(eleitorNovo.getSenha());
@@ -53,7 +54,7 @@ public class EleitorService {
         }catch (EmptyResultDataAccessException e){
             throw new ResourceNotFoundException(id);
         }catch (DataIntegrityViolationException e){
-            throw new DataIntegrityViolationException(e.getMessage());
+            throw new DatabaseException(e.getMessage());
 
         }
     }
