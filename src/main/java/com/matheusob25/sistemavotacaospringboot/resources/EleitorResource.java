@@ -39,7 +39,7 @@ public class EleitorResource {
         return ResponseEntity.ok().body(eleitor);
     }
     @DeleteMapping(value = "/{id}")
-    public ResponseEntity<Void> removerEleitor(@PathVariable Long id){
+    public ResponseEntity<Void> removerEleitorPorId(@PathVariable Long id){
         eleitorService.removerEleitorPorId(id);
         return ResponseEntity.noContent().build();
     }
