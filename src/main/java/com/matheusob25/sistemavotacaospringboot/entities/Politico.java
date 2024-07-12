@@ -1,5 +1,6 @@
 package com.matheusob25.sistemavotacaospringboot.entities;
 
+import com.matheusob25.sistemavotacaospringboot.entities.enums.Cargo;
 import jakarta.persistence.*;
 
 import java.io.Serializable;
@@ -13,6 +14,7 @@ public class Politico implements Serializable {
     private Long id;
     private String nome;
     private String descricao;
+    private Integer cargo;
 
     @ManyToMany
     @JoinTable(name = "tb_politico_eleitor", joinColumns = @JoinColumn(name = "id_politico"), inverseJoinColumns = @JoinColumn(name = "id_eleitor"))
@@ -21,10 +23,11 @@ public class Politico implements Serializable {
     public Politico() {
 
     }
-    public Politico(Long id, String nome, String descricao) {
+    public Politico(Long id, String nome, String descricao, Cargo cargo) {
         this.id = id;
         this.nome = nome;
         this.descricao = descricao;
+        setCargo(cargo);
     }
 
     public Long getId() {
@@ -59,6 +62,14 @@ public class Politico implements Serializable {
         }else {
             System.out.println("Erro ao adicionar eleitor, já existe ou valores nulos");
         }
+    }
+    public void setCargo(Cargo cargo) {
+        if (cargo != null) {
+            this.cargo = cargo.getCodigoDoCargo();
+        }
+    }
+    public Cargo getCargo() {
+        return Cargo.valueOf(this.cargo);
     }
 
     @Override
