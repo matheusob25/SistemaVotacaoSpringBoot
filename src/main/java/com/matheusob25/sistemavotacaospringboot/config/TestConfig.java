@@ -5,6 +5,7 @@ import com.matheusob25.sistemavotacaospringboot.entities.Politico;
 import com.matheusob25.sistemavotacaospringboot.entities.enums.Cargo;
 import com.matheusob25.sistemavotacaospringboot.repositories.EleitorRepository;
 import com.matheusob25.sistemavotacaospringboot.repositories.PoliticoRepository;
+import com.matheusob25.sistemavotacaospringboot.services.EleitorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Configuration;
@@ -21,6 +22,9 @@ public class TestConfig implements CommandLineRunner {
     @Autowired
     PoliticoRepository politicoRepository;
 
+    @Autowired
+    EleitorService eleitorService;
+
     @Override
     public void run(String... args) throws Exception {
 
@@ -31,16 +35,10 @@ public class TestConfig implements CommandLineRunner {
         eleitorRepository.saveAll(Arrays.asList(e1, e2, e3));
 
         Politico p1 = new Politico(null, "Rodinei do maracujá", "Não sou corrupto, eu acho", Cargo.PREFEITO);
-        Politico p2 = new Politico(null, "jorge cena", "vou tentar não roubar", Cargo.GOVERNADOR);
-        politicoRepository.saveAll(Arrays.asList(p1, p2));
-        e1.votarPolitico(p1);
-        e2.votarPolitico(p1);
-        e3.votarPolitico(p2);
-        eleitorRepository.save(e1);
-        eleitorRepository.save(e2);
-        eleitorRepository.save(e3);
-        politicoRepository.save(p1);
-        politicoRepository.save(p2);
+        Politico p2 = new Politico(null, "jorge cena", "vou tentar não roubar", Cargo.PREFEITO);
+        Politico p3 = new Politico(null, "lula", "companheiros e companheiras", Cargo.PRESIDENTE);
+        politicoRepository.saveAll(Arrays.asList(p1, p2,p3));
+
 
     }
 }

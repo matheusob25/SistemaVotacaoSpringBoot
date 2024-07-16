@@ -1,6 +1,7 @@
 package com.matheusob25.sistemavotacaospringboot.services;
 
 import com.matheusob25.sistemavotacaospringboot.entities.Eleitor;
+import com.matheusob25.sistemavotacaospringboot.entities.Politico;
 import com.matheusob25.sistemavotacaospringboot.services.exceptions.DatabaseException;
 import com.matheusob25.sistemavotacaospringboot.services.exceptions.ResourceNotFoundException;
 import jakarta.persistence.EntityNotFoundException;
@@ -14,12 +15,16 @@ import com.matheusob25.sistemavotacaospringboot.repositories.EleitorRepository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Service
 public class EleitorService {
 
     @Autowired
     private EleitorRepository eleitorRepo;
+    @Autowired
+    private PoliticoService politicoService;
+
     private PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     public List<Eleitor> listarEleitores(){
@@ -57,6 +62,38 @@ public class EleitorService {
             throw new DatabaseException(e.getMessage());
 
         }
+    }
+
+    public void votarPolitico(Long id, Long idPolitico){
+        Eleitor eleitor = buscarEleitorPorId(id);
+        Politico politico = politicoService.encontrarPoliticoPorId(idPolitico);
+        if (!eleitor.getPoliticos().contains(politico) && !politico.getEleitores().contains(eleitor)){
+            if (eleitor.getPoliticos().size() == 0){
+                eleitor.getPoliticos().add(politico);
+                politico.getEleitores().add(eleitor);
+                inserirEleitor(eleitor);
+                politicoService.inserirPolitico(politico);
+            } else if (eleitor.getPoliticos().size() > 0){
+                for (Politico p : eleitor.getPoliticos()){
+                    if (p.getCargo() == politico.getCargo()){
+                        eleitor.getPoliticos().remove(p);
+                        eleitor.getPoliticos().add(politico);
+                        p.getEleitores().remove(eleitor);
+                        politico.getEleitores().add(eleitor);
+                        inserirEleitor(eleitor);
+                        politicoService.inserirPolitico(politico);
+                    }else{
+                        eleitor.getPoliticos().add(politico);
+                        politico.getEleitores().add(eleitor);
+                        inserirEleitor(eleitor);
+                        politicoService.inserirPolitico(politico);
+                    }
+                }
+            }
+        }else{
+            throw new IllegalStateException("Politico já foi votado");
+        }
+
     }
 
 

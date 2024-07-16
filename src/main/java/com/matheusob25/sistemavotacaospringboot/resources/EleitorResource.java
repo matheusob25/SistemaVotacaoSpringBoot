@@ -1,6 +1,7 @@
 package com.matheusob25.sistemavotacaospringboot.resources;
 
 import com.matheusob25.sistemavotacaospringboot.entities.Eleitor;
+import com.matheusob25.sistemavotacaospringboot.entities.Politico;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -42,6 +43,11 @@ public class EleitorResource {
     public ResponseEntity<Void> removerEleitorPorId(@PathVariable Long id){
         eleitorService.removerEleitorPorId(id);
         return ResponseEntity.noContent().build();
+    }
+    @PostMapping(value = "/votar/{id}/{idPolitico}")
+    public ResponseEntity<String> votarPolitico(@PathVariable Long id, @PathVariable Long idPolitico){
+        eleitorService.votarPolitico(id, idPolitico);
+        return ResponseEntity.ok("Voto computado com sucesso");
     }
 
 }
