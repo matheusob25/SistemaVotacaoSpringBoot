@@ -13,6 +13,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import com.matheusob25.sistemavotacaospringboot.repositories.EleitorRepository;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -67,32 +68,38 @@ public class EleitorService {
     public void votarPolitico(Long id, Long idPolitico){
         Eleitor eleitor = buscarEleitorPorId(id);
         Politico politico = politicoService.encontrarPoliticoPorId(idPolitico);
-        if (!eleitor.getPoliticos().contains(politico) && !politico.getEleitores().contains(eleitor)){
+        Set<Politico> politicosRemovidos = new HashSet<>();
             if (eleitor.getPoliticos().size() == 0){
                 eleitor.getPoliticos().add(politico);
                 politico.getEleitores().add(eleitor);
                 inserirEleitor(eleitor);
                 politicoService.inserirPolitico(politico);
             } else if (eleitor.getPoliticos().size() > 0){
-                for (Politico p : eleitor.getPoliticos()){
-                    if (p.getCargo() == politico.getCargo()){
-                        eleitor.getPoliticos().remove(p);
-                        eleitor.getPoliticos().add(politico);
-                        p.getEleitores().remove(eleitor);
-                        politico.getEleitores().add(eleitor);
-                        inserirEleitor(eleitor);
-                        politicoService.inserirPolitico(politico);
-                    }else{
-                        eleitor.getPoliticos().add(politico);
-                        politico.getEleitores().add(eleitor);
-                        inserirEleitor(eleitor);
-                        politicoService.inserirPolitico(politico);
+                if (!eleitor.getPoliticos().contains(politico) && !politico.getEleitores().contains(eleitor)){
+                    for (Politico p : eleitor.getPoliticos()){
+                        if (p.getCargo() == politico.getCargo()){
+                            politicosRemovidos.add(p);
+
+
+                        }
                     }
+                    for (Politico p : politicosRemovidos){
+                        p.getEleitores().remove(eleitor);
+                        politicoService.inserirPolitico(p);
+                    }
+                    eleitor.getPoliticos().removeAll(politicosRemovidos);
+                    eleitor.getPoliticos().add(politico);
+                    politico.getEleitores().add(eleitor);
+                    politicoService.inserirPolitico(politico);
+                    inserirEleitor(eleitor);
+                }else{
+                    System.out.println("já votou nesse político");
                 }
+
+
+
             }
-        }else{
-            throw new IllegalStateException("Politico já foi votado");
-        }
+
 
     }
 
